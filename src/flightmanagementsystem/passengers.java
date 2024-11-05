@@ -40,17 +40,16 @@ public class passengers {
                         ps.viewPassengers();
                         break;
                     case 5:
-                        System.out.println("Exiting...");
+                        
                         break;
-                    default:
-                        System.out.println("Invalid choice. Please try again.");
-                }
+                        
+                     }
                 System.out.print("Do you want to continue? (yes/no): ");
                 response = sc.next();
             } while (response.equalsIgnoreCase("yes"));
-            System.out.println("Thank you, See you soonest!");
+            
         }
-    }
+ }
 
     public void addPassengers(Scanner sc) {
         config conf = new config();
@@ -61,7 +60,7 @@ public class passengers {
         String lname = sc.nextLine();
         System.out.print("Passengers email: ");
         String email = sc.nextLine();
-        System.out.print("passengers status: ");
+        System.out.print("Passengers status: ");
         String status = sc.nextLine();
 
         String sql = "INSERT INTO tbl_passengers (p_fname, p_lname, p_email, p_status) VALUES (?, ?, ?, ?)";
@@ -93,7 +92,7 @@ public class passengers {
 
         String sql = "UPDATE tbl_passengers SET p_fname = ?, p_lname = ?, p_email = ?, p_status = ? WHERE p_id = ?";
         conf.updateRecord(sql, fname, lname, email, status, id);
-        System.out.println("Flight updated successfully.");
+        System.out.println("Passenger updated successfully.");
     }
 
     public void deletePassengers(Scanner sc) {
@@ -102,7 +101,7 @@ public class passengers {
 
         String sql = "DELETE FROM tbl_passengers WHERE p_id = ?";
         conf.deleteRecord(sql, id);
-        System.out.println("Passengers deleted successfully.");
+        System.out.println("Passenger deleted successfully.");
     }
 
     public static int getIntInput(Scanner sc, String prompt) {

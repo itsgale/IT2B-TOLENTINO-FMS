@@ -40,29 +40,27 @@ public class flights {
                         fs.viewFlights();
                         break;
                     case 5:
-                        System.out.println("Exiting...");
+                        
                         break;
-                    default:
-                        System.out.println("Invalid choice. Please try again.");
-                }
+                        
+                     }
                 System.out.print("Do you want to continue? (yes/no): ");
                 response = sc.next();
             } while (response.equalsIgnoreCase("yes"));
-            System.out.println("Thank you, See you soonest!");
             
         }
-    }
+ }
 
     public void addFlights(Scanner sc) {
         config conf = new config();
 
-        System.out.print("Enter Departure: ");
+        System.out.print("Enter departure: ");
         String fdeparture = sc.nextLine();
-        System.out.print("Enter Destination: ");
+        System.out.print("Enter destination: ");
         String fdestination = sc.nextLine();
-        System.out.print("Enter Date: ");
+        System.out.print("Enter date: ");
         String fdate = sc.nextLine();
-        System.out.print("Enter Time: ");
+        System.out.print("Enter time: ");
         String ftime = sc.nextLine();
 
         String sql = "INSERT INTO tbl_flights (f_departure, f_destination, f_date, f_time) VALUES (?, ?, ?, ?)";
@@ -71,7 +69,7 @@ public class flights {
 
     public void viewFlights() {
         config conf = new config();
-        String sqlQuery = "SELECT * FROM tbl_Flights";
+        String sqlQuery = "SELECT * FROM tbl_flights";
         String[] columnHeaders = {"ID", "DEPARTURE", "DESTINATION", "DATE", "TIME"};
         String[] columnNames = {"f_id", "f_departure", "f_destination", "f_date", "f_time"};
         conf.viewRecord(sqlQuery, columnHeaders, columnNames);
@@ -103,7 +101,7 @@ public class flights {
 
         String sql = "DELETE FROM tbl_flights WHERE f_id = ?";
         conf.deleteRecord(sql, id);
-        System.out.println("Flights deleted successfully.");
+        System.out.println("Flight deleted successfully.");
     }
 
     public static int getIntInput(Scanner sc, String prompt) {

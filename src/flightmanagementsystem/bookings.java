@@ -6,8 +6,7 @@ public class bookings {
     
     public void bManagement(){
         
-                   try (Scanner sc = new Scanner(System.in)) {
-            int choice;
+                   Scanner sc = new Scanner(System.in);
             String response;
             do {
                  System.out.println("\n--- BOOKINGS MENU ---");
@@ -18,38 +17,78 @@ public class bookings {
                 System.out.println("5. EXIT");
 
 
-                choice = getIntInput(sc, "Enter your choice: ");
-
+                System.out.print("Enter your choice: ");
+                  int act = sc.nextInt();
                  bookings bs = new bookings();
 
-                switch (choice) {
+                switch (act) {
                     case 1:
-                        bookings.addBookings(sc);
+                        bs.addBookings();
+                        bs.viewBookings();
                         break;
                     case 2:
-                        bookings.viewBookings();
+                        bs.viewBookings();
                         break;
                     case 3:
-                        bookings.viewBookings();
-                        bookings.updateBookings(sc);
-                        bookings.viewBookings();
+                        
                         break;
                     case 4:
-                        bookings.viewBookings();
-                        bookings.deleteBookings(sc);
-                        bookings.viewBookings();
-                        break;
+                        
+                    break;
                     case 5:
-                        System.out.println("Exiting...");
+                        
                         break;
-                    default:
-                        System.out.println("Invalid choice. Please try again.");
+                    
                 }
                 System.out.print("Do you want to continue? (yes/no): ");
                 response = sc.next();
             } while (response.equalsIgnoreCase("yes"));
-            System.out.println("Thank you, See you soonest!");
+            
         }
                    
+                   public void addBookings(){
+                           Scanner sc = new Scanner(System.in);
+                           config conf = new config();
+                           flights fs = new flights();
+                           fs.viewFlights();
+                           
+                           System.out.print("Enter the ID of the flight: ");
+                           int fid = sc.nextInt();
+                           
+                           String fsql = "SELECT f_id FROM tbl_flights WHERE f_id = ?";
+                           while(conf.getSingleValue(fsql, fid) == 0){
+                               System.out.print("Flight does not exist choose again: ");
+                               fid = sc.nextInt();
+                           }
+                           
+                           passengers ps = new passengers();
+                           ps.viewPassengers();
+                           
+                           System.out.print("Enter the ID of the passenger: ");
+                           int pid = sc.nextInt();
+                           
+                           String psql = "SELECT p_id FROM tbl_passengers WHERE p_id = ?";
+                           while(conf.getSingleValue(psql, pid) == 0){
+                               System.out.print("Passenger does not exist choose again: ");
+                               pid = sc.nextInt();
+                           }
+                           
+                           System.out.print("Booking date: ");
+                           String bdate = sc.next(); 
+                           System.out.print("Booking status: ");
+                           String bstatus = sc.next();
+                           
+                           String sql = "INSERT INTO tbl_bookings (b_date, b_status) VALUES (?, ?)";
+        conf.addRecord(sql, bdate, bstatus);
     }
-}
+                   
+                   public void viewBookings() {
+        config conf = new config();
+        String sqlQuery = "SELECT b_id, f_departure, f_destination, p_fname, p_lname, b_date, b_status FROM tbl_bookings "
+                + "LEFT JOIN tbl_flights ON tbl_flights.f_id = tbl_bookings.f_id "
+                + "LEFT JOIN tbl_passengers ON tbl_passengers.p_id = tbl_bookings.p_id";
+        String[] columnHeaders = {"ID", "DEPARTURE", "DESTINATION", "FIRST NAME", "LAST NAME", "DATE", "STATUS"};
+        String[] columnNames = {"b_id", "f_departure", "f_destination", "p_fname", "p_lname", "b_date", "b_status"};
+        conf.viewRecord(sqlQuery, columnHeaders, columnNames);
+            }
+      }

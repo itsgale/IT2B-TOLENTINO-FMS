@@ -29,6 +29,10 @@ public class FlightManagementSystem {
                         ps.pManagement();
                         break;
                         
+                    case 3:
+                        bookings bs = new bookings();
+                        bs.bManagement();
+                        
                     case 5:
                         System.out.print("Exiting selection, type 'yes' to exit 'no to continue: ");
                         String resp = sc.next();
