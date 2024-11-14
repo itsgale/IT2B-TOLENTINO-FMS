@@ -14,7 +14,6 @@ public static Connection connectDB() {
         try {
             Class.forName("org.sqlite.JDBC"); // Load the SQLite JDBC driver
             con = DriverManager.getConnection("jdbc:sqlite:tolentino.db"); // Establish connection
-            System.out.println("Connection Successful");
         } catch (Exception e) {
             System.out.println("Connection Failed: " + e);
         }
@@ -53,7 +52,6 @@ public void addRecord(String sql, Object... values) {
         }
 
         pstmt.executeUpdate();
-        System.out.println("Record added successfully!");
     } catch (SQLException e) {
         System.out.println("Error adding record: " + e.getMessage());
     }
@@ -77,11 +75,11 @@ public void addRecord(String sql, Object... values) {
 
             // Print the headers dynamically
             StringBuilder headerLine = new StringBuilder();
-            headerLine.append("----------------------------------------------------------------------------------------------------------------------------------------------------------\n| ");
+            headerLine.append("---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\n| ");
             for (String header : columnHeaders) {
                 headerLine.append(String.format("%-20s | ", header)); // Adjust formatting as needed
             }
-            headerLine.append("\n---------------------------------------------------------------------------------------------------------------------------------------------------------------");
+            headerLine.append("\n-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------");
 
             System.out.println(headerLine.toString());
 
@@ -94,7 +92,7 @@ public void addRecord(String sql, Object... values) {
                 }
                 System.out.println(row.toString());
             }
-            System.out.println("-----------------------------------------------------------------------------------------------------------------------------------------------------------------");
+            System.out.println("-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------");
 
         } catch (SQLException e) {
             System.out.println("Error retrieving records: " + e.getMessage());
@@ -133,7 +131,6 @@ public void addRecord(String sql, Object... values) {
             }
 
             pstmt.executeUpdate();
-            System.out.println("Record updated successfully!");
         } catch (SQLException e) {
             System.out.println("Error updating record: " + e.getMessage());
         }
@@ -158,7 +155,6 @@ public void deleteRecord(String sql, Object... values) {
         }
 
         pstmt.executeUpdate();
-        System.out.println("Record deleted successfully!");
     } catch (SQLException e) {
         System.out.println("Error deleting record: " + e.getMessage());
     }
@@ -211,7 +207,51 @@ public void deleteRecord(String sql, Object... values) {
         }
         return result;
     }
+    
+    // NEW METHOD to retrieve a String value from the database
+public String getSingleStringValue(String sql, Object... params) {
+    String result = null;
+    try (Connection conn = connectDB();
+         PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
+        setPreparedStatementValues(pstmt, params); // Reuse this helper method
+        ResultSet rs = pstmt.executeQuery();
+        if (rs.next()) {
+            result = rs.getString(1); // Get the first column value as String
+        }
 
-
+    } catch (SQLException e) {
+        System.out.println("Error retrieving single string value: " + e.getMessage());
+    }
+    return result;
 }
+
+public void viewReport(String sql, String[] headers, String[] columnNames, Object... params) {
+    try (Connection conn = this.connectDB();
+         PreparedStatement pstmt = conn.prepareStatement(sql)) {
+         
+        // Set parameters if any
+        for (int i = 0; i < params.length; i++) {
+            pstmt.setObject(i + 1, params[i]);
+        }
+
+        try (ResultSet rs = pstmt.executeQuery()) {
+            // Print column headers
+            for (String header : headers) {
+                System.out.print(header + "\t");
+            }
+            System.out.println();
+            
+            // Print each row of data
+            while (rs.next()) {
+                for (String col : columnNames) {
+                    System.out.print(rs.getObject(col) + "\t");
+                }
+                System.out.println();
+            }
+        }
+    } catch (SQLException e) {
+        e.printStackTrace(); // Handle SQL errors here
+    }
+   }
+  }
