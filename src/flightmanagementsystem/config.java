@@ -5,6 +5,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 
 public class config {
     
@@ -254,4 +255,12 @@ public void viewReport(String sql, String[] headers, String[] columnNames, Objec
         e.printStackTrace(); // Handle SQL errors here
     }
    }
+
+    String[] getSingleStringArrayValue(String fsql, int fid) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    List<Integer> getMultipleValues(String checkPassengerFlightSql, int pid) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
   }

@@ -68,19 +68,68 @@ public class reports {
     }
 
     public void viewAllReports() {
-        System.out.println("\n--------------------------------------");
-        System.out.println("|           ALL REPORTS             |");
+    boolean continueReports = true;
+    do {
+        System.out.println("--------------------------------------");
+        System.out.println("|           ALL REPORTS MENU         |");
+        System.out.println("--------------------------------------");
+        System.out.println("| 1. VIEW FLIGHTS REPORT             |");
+        System.out.println("| 2. VIEW PASSENGERS REPORT          |");
+        System.out.println("| 3. VIEW BOOKINGS REPORT            |");
+        System.out.println("| 4. EXIT                            |");
         System.out.println("--------------------------------------");
 
-        System.out.println("\n--- FLIGHTS REPORT ---");
-        flights.viewAllFlights();
-        
-        System.out.println("\n--- PASSENGERS REPORT ---");
-        passengers.viewAllPassengers();
-        
-        System.out.println("\n--- BOOKINGS REPORT ---");
-        bookings.viewAllBookings();
-    }
+        System.out.print("Enter your choice (1-4): ");
+
+        int choice;
+        while (true) {
+            try {
+                choice = input.nextInt();
+                if (choice >= 1 && choice <= 4) {
+                    break;
+                } else {
+                    System.out.print("Invalid choice, Please select a number between 1 and 4: ");
+                }
+            } catch (Exception e) {
+                input.next(); 
+                System.out.print("Invalid input, Please enter a valid number: ");
+            }
+        }
+
+        switch (choice) {
+            case 1:
+                System.out.println("\n--- FLIGHTS REPORT ---");
+                flights.viewAllFlights();
+                break;
+            case 2:
+                System.out.println("\n--- PASSENGERS REPORT ---");
+                passengers.viewAllPassengers();
+                break;
+            case 3:
+                System.out.println("\n--- BOOKINGS REPORT ---");
+                bookings.viewAllBookings();
+                break;
+            case 4:
+                continueReports = false; // 
+                break;
+        }
+
+        if (choice != 4) {
+            System.out.print("Do you want to view another report? (yes/no): ");
+            String response = input.next().toLowerCase();
+            while (!response.equals("yes") && !response.equals("no")) {
+                System.out.println("Invalid input, please enter 'yes' or 'no'.");
+                System.out.print("Do you want to view another report? (yes/no): ");
+                response = input.next().toLowerCase();
+            }
+
+            if (response.equals("no")) {
+                continueReports = false;
+            }
+        }
+
+    } while (continueReports);
+}
 
     public void individualReport() {
         System.out.println("\n--------------------------------------");

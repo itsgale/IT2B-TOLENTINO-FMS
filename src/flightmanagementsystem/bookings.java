@@ -3,7 +3,7 @@ package flightmanagementsystem;
 import java.util.Scanner;
 
 public class bookings {
-    
+
     public void bManagement() {
         Scanner sc = new Scanner(System.in);
         String response;
@@ -36,7 +36,7 @@ public class bookings {
                     }
                 } else {
                     System.out.println("Invalid input, Please enter a valid number.");
-                    sc.next(); 
+                    sc.next();
                 }
             }
 
@@ -61,7 +61,6 @@ public class bookings {
                     bs.viewBookings();
                     break;
                 case 5:
-                    
                     break;
             }
 
@@ -78,92 +77,124 @@ public class bookings {
     }
 
     public void addBookings() {
-        Scanner sc = new Scanner(System.in);
-        config conf = new config();
-        flights fs = new flights();
-        fs.viewFlights();
+    Scanner sc = new Scanner(System.in);
+    config conf = new config();
+    flights fs = new flights();
+    fs.viewFlights();
 
-        int fid = 0;
-        boolean validFlightId = false;
-        while (!validFlightId) {
-            System.out.print("Enter ID of the flight: ");
-            if (sc.hasNextInt()) {
-                fid = sc.nextInt();
-                sc.nextLine();
-                String fsql = "SELECT f_id FROM tbl_flights WHERE f_id = ?";
-                if (conf.getSingleValue(fsql, fid) != 0) {
-                    validFlightId = true;
-                } else {
-                    System.out.println("Selected flight ID doesn't exist, Select again.");
-                }
+    int fid = 0;
+    boolean validFlightId = false;
+    while (!validFlightId) {
+        System.out.print("Enter ID of the flight: ");
+        if (sc.hasNextInt()) {
+            fid = sc.nextInt();
+            sc.nextLine();
+            String fsql = "SELECT f_status FROM tbl_flights WHERE f_id = ?";
+            String flightStatus = conf.getSingleStringValue(fsql, fid);
+
+            if (flightStatus == null) {
+                System.out.println("Selected flight ID doesn't exist, Select again.");
+            } else if (flightStatus.equalsIgnoreCase("cancelled")) {
+                System.out.println("The selected flight is cancelled and cannot be booked.");
             } else {
-                System.out.println("Invalid input, Please enter a valid flight ID.");
-                sc.next();
+                validFlightId = true;
             }
+        } else {
+            System.out.println("Invalid input, Please enter a valid flight ID.");
+            sc.next();
         }
-
-        passengers ps = new passengers();
-        ps.viewPassengers();
-
-        int pid = 0;
-        boolean validPassengerId = false;
-        while (!validPassengerId) {
-            System.out.print("Enter ID of the passenger: ");
-            if (sc.hasNextInt()) {
-                pid = sc.nextInt();
-                sc.nextLine();
-                String psql = "SELECT p_id FROM tbl_passengers WHERE p_id = ?";
-                if (conf.getSingleValue(psql, pid) != 0) {
-                    validPassengerId = true;
-                } else {
-                    System.out.println("Selected passenger ID doesn't exist, Select again.");
-                }
-            } else {
-                System.out.println("Invalid input, Please enter a valid passenger ID.");
-                sc.next();
-            }
-        }
-
-        String bdate = "";
-        boolean validDate = false;
-        while (!validDate) {
-            System.out.print("Enter booking date (YYYY-MM-DD): ");
-            bdate = sc.nextLine();
-            if (bdate.matches("\\d{4}-\\d{2}-\\d{2}")) {
-                validDate = true;
-            } else {
-                System.out.println("Invalid date format, Please enter the date in YYYY-MM-DD format.");
-            }
-        }
-
-        String btprice = "";
-        boolean validPrice = false;
-        while (!validPrice) {
-            System.out.print("Enter ticket price: ");
-            btprice = sc.nextLine();
-            if (btprice.matches("\\d+(\\.\\d{2})?")) {
-                validPrice = true;
-            } else {
-                System.out.println("Invalid price format, Please enter a valid price (e.g., 100.00).");
-            }
-        }
-
-        String bstatus = "";
-        boolean validStatus = false;
-        while (!validStatus) {
-            System.out.print("Enter booking status (confirmed/cancelled): ");
-            bstatus = sc.nextLine().toLowerCase();
-            if (bstatus.equals("confirmed") || bstatus.equals("cancelled")) {
-                validStatus = true;
-            } else {
-                System.out.println("Invalid booking status, Please enter 'confirmed' or 'cancelled'.");
-            }
-        }
-
-        String sql = "INSERT INTO tbl_bookings (f_id, p_id, b_date, b_tprice, b_status) VALUES (?, ?, ?, ?, ?)";
-        conf.addRecord(sql, fid, pid, bdate, btprice, bstatus);
-        System.out.println("Booking added successfully.");
     }
+
+    passengers ps = new passengers();
+    ps.viewPassengers();
+
+    int pid = 0;
+    boolean validPassengerId = false;
+    while (!validPassengerId) {
+        System.out.print("Enter ID of the passenger: ");
+        if (sc.hasNextInt()) {
+            pid = sc.nextInt();
+            sc.nextLine();
+            String psql = "SELECT p_id FROM tbl_passengers WHERE p_id = ?";
+            if (conf.getSingleValue(psql, pid) != 0) {
+                validPassengerId = true;
+            } else {
+                System.out.println("Selected passenger ID doesn't exist, Select again.");
+            }
+        } else {
+            System.out.println("Invalid input, Please enter a valid passenger ID.");
+            sc.next();
+        }
+    }
+
+    String checkBookingSql = "SELECT COUNT(*) FROM tbl_bookings WHERE p_id = ? AND f_id = ?";
+    int existingBookings = (int) conf.getSingleValue(checkBookingSql, pid, fid);
+
+    if (existingBookings > 0) {
+        System.out.println("This passenger is already booked on this flight.");
+        return;
+    }
+
+    String bdate = "";
+    boolean validDate = false;
+    while (!validDate) {
+        System.out.print("Enter booking date (YYYY-MM-DD): ");
+        bdate = sc.nextLine();
+        if (bdate.matches("\\d{4}-\\d{2}-\\d{2}")) {
+            validDate = true;
+        } else {
+            System.out.println("Invalid date format, Please enter the date in YYYY-MM-DD format.");
+        }
+    }
+
+    String btprice = "";
+    boolean validPrice = false;
+    while (!validPrice) {
+        System.out.println("Select ticket class:");
+        System.out.println("1. Economy (666.66)");
+        System.out.println("2. First Class (999.99)");
+
+        int classChoice = 0;
+        boolean validClassChoice = false;
+        while (!validClassChoice) {
+            System.out.print("Enter your choice (1 or 2): ");
+            if (sc.hasNextInt()) {
+                classChoice = sc.nextInt();
+                sc.nextLine();
+                if (classChoice == 1) {
+                    btprice = "666.66";
+                    validClassChoice = true;
+                } else if (classChoice == 2) {
+                    btprice = "999.99";
+                    validClassChoice = true;
+                } else {
+                    System.out.println("Invalid choice, Please select 1 for Economy or 2 for First Class.");
+                }
+            } else {
+                System.out.println("Invalid input, Please enter a valid number (1 or 2).");
+                sc.next();
+            }
+        }
+
+        validPrice = true;
+    }
+
+    String bstatus = "";
+    boolean validStatus = false;
+    while (!validStatus) {
+        System.out.print("Enter booking status (confirmed/cancelled): ");
+        bstatus = sc.nextLine().toLowerCase();
+        if (bstatus.equals("confirmed") || bstatus.equals("cancelled")) {
+            validStatus = true;
+        } else {
+            System.out.println("Invalid booking status, Please enter 'confirmed' or 'cancelled'.");
+        }
+    }
+
+    String sql = "INSERT INTO tbl_bookings (f_id, p_id, b_date, b_tprice, b_status) VALUES (?, ?, ?, ?, ?)";
+    conf.addRecord(sql, fid, pid, bdate, btprice, bstatus);
+    System.out.println("Booking added successfully.");
+}
 
     public void viewBookings() {
         config conf = new config();
@@ -191,7 +222,7 @@ public class bookings {
                 String currentStatus = conf.getSingleStringValue(checkSql, id);
                 if (currentStatus != null) {
                     if (currentStatus.equals("confirmed")) {
-                        System.out.println("Booking with status 'confirmed' cannot be updated.");
+                        System.out.println("Booking with status confirmed cannot be updated.");
                         return;
                     } else {
                         validId = true;
@@ -218,16 +249,36 @@ public class bookings {
         }
 
         String btprice = "";
-        boolean validPrice = false;
-        while (!validPrice) {
-            System.out.print("Enter new ticket price: ");
-            btprice = sc.nextLine();
-            if (btprice.matches("\\d+(\\.\\d{2})?")) {
-                validPrice = true;
+boolean validPrice = false;
+while (!validPrice) {
+    System.out.println("Select ticket class:");
+    System.out.println("1. Economy (666.66)");
+    System.out.println("2. First Class (999.99)");
+
+    int classChoice = 0;
+    boolean validClassChoice = false;
+    while (!validClassChoice) {
+        System.out.print("Enter your choice (1 or 2): ");
+        if (sc.hasNextInt()) {
+            classChoice = sc.nextInt();
+            sc.nextLine();  
+            if (classChoice == 1) {
+                btprice = "666.66";  
+                validClassChoice = true;
+            } else if (classChoice == 2) {
+                btprice = "999.99";  
+                validClassChoice = true;
             } else {
-                System.out.println("Invalid price format, Please enter a valid price (e.g., 100.00).");
+                System.out.println("Invalid choice, Please select 1 for Economy or 2 for First Class.");
             }
+        } else {
+            System.out.println("Invalid input, Please enter a valid number (1 or 2).");
+            sc.next();  
         }
+    }
+
+    validPrice = true; 
+}
 
         String bstatus = "";
         boolean validStatus = false;
@@ -269,8 +320,8 @@ public class bookings {
             }
         }
 
-        String deleteSql = "DELETE FROM tbl_bookings WHERE b_id = ?";
-        conf.deleteRecord(deleteSql, id);
+        String sql = "DELETE FROM tbl_bookings WHERE b_id = ?";
+        conf.deleteRecord(sql, id);
         System.out.println("Booking deleted successfully.");
     }
 }

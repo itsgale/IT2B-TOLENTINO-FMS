@@ -79,7 +79,7 @@ public class FlightManagementSystem {
                     break;
             }
 
-            System.out.println("Thank you!");
+            System.out.println("Thank you for using the app!");
         } while (exit);
         
     }
