@@ -117,7 +117,15 @@ public class bookings {
             sc.nextLine();
             String psql = "SELECT p_id FROM tbl_passengers WHERE p_id = ?";
             if (conf.getSingleValue(psql, pid) != 0) {
-                validPassengerId = true;
+                
+                String matchSql = "SELECT COUNT(*) FROM tbl_bookings WHERE f_id = ? AND p_id = ?";
+                int isMatch = (int) conf.getSingleValue(matchSql, fid, pid);
+
+                if (isMatch > 0) {
+                    validPassengerId = true;
+                } else {
+                    System.out.println("The selected passenger is not eligible for the chosen flight, Select again.");
+                }
             } else {
                 System.out.println("Selected passenger ID doesn't exist, Select again.");
             }
